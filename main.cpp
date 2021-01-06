@@ -74,7 +74,6 @@ vector <Uzytkownik> wczytajUzytkownikow(vector <Uzytkownik> uzytkownicy ) {
             }
             wers.erase(0,pozycja+1);
 
-
             uzytkownicy.push_back(*Nadawca);
             delete Nadawca;
         }
@@ -85,87 +84,101 @@ vector <Uzytkownik> wczytajUzytkownikow(vector <Uzytkownik> uzytkownicy ) {
 
 vector<Uzytkownik> dodajUzytkownika(vector<Uzytkownik> uzytkownicy, int liczbaUzytkownikow) {
     system("cls");
+    cin.sync();
     Uzytkownik Nadawca;
-    Uzytkownik OstatniNadawca=uzytkownicy.at(liczbaUzytkownikow-1);
     string login, haslo;
 
-    cout<<"Podaj login: ";
-    login=wczytajLinie();
-    vector<Uzytkownik>::iterator itr=uzytkownicy.begin();
+    if (liczbaUzytkownikow==0) {
+        cout<<"Podaj login: ";
+        login=wczytajLinie();
+        cout<<"Podaj haslo: ";
+        haslo=wczytajLinie();
 
-    for(itr; itr!=uzytkownicy.end(); ++itr) {
-        Uzytkownik *Nadawca=new Uzytkownik;
-        *Nadawca=*itr;
-        if(Nadawca->login==login)
-        {
-            cout<<"Taki uzytkownik istnieje. Wpisz inna nazwe uzytkownika: ";
-            cin>>login;
-            itr=uzytkownicy.begin();
-        }
-    }
+        Nadawca.login=login;
+        Nadawca.haslo=haslo;
+        Nadawca.id=1;
 
-    cout<<"Podaj haslo: ";
-    haslo=wczytajLinie();
-
-    Nadawca.login=login;
-    Nadawca.haslo=haslo;
-
-    Nadawca.id=OstatniNadawca.id+1;
-    uzytkownicy.push_back(Nadawca);
-
-    fstream Nadawcy;
-    Nadawcy.open("Uzytkownicy.txt",ios::out | ios::app);
-
-    if (Nadawcy.good() == true) {
-        Nadawcy<<endl<<Nadawca.id<<"|";
-        Nadawcy<<Nadawca.login<<"|";
-        Nadawcy<<Nadawca.haslo<<"|";
-
-        Nadawcy.close();
     } else {
-        cout << "Nie udalo sie otworzyc pliku i zapisac do niego danych." << endl;
-        system("pause");
+        Uzytkownik OstatniNadawca=uzytkownicy.at(liczbaUzytkownikow-1);
+
+        cout<<"Podaj login: ";
+        login=wczytajLinie();
+        vector<Uzytkownik>::iterator itr=uzytkownicy.begin();
+
+        for(itr; itr!=uzytkownicy.end(); ++itr) {
+            Uzytkownik *Nadawca=new Uzytkownik;
+            *Nadawca=*itr;
+            if(Nadawca->login==login) {
+                cout<<"Taki uzytkownik istnieje. Wpisz inna nazwe uzytkownika: ";
+                cin>>login;
+                itr=uzytkownicy.begin();
+            }
+        }
+
+        cout<<"Podaj haslo: ";
+        haslo=wczytajLinie();
+
+        Nadawca.login=login;
+        Nadawca.haslo=haslo;
+
+        Nadawca.id=OstatniNadawca.id+1;
     }
-    cout << endl << "Rejestracja przebiegla pomyslnie. Zaloguj sie" << endl;
-    system("pause");
+        uzytkownicy.push_back(Nadawca);
 
-    return uzytkownicy;
-}
+        fstream Nadawcy;
+        Nadawcy.open("Uzytkownicy.txt",ios::out | ios::app);
 
-int main() {
-    vector <Uzytkownik> uzytkownicy;
+        if (Nadawcy.good() == true) {
+            if(Nadawca.id!=1) Nadawcy<<endl;
+            Nadawcy<<Nadawca.id<<"|";
+            Nadawcy<<Nadawca.login<<"|";
+            Nadawcy<<Nadawca.haslo<<"|";
 
-    int liczbaUzytkownikow;
-    int idZalogowanegoUzytkownika=0;
-    int iloscUzytkownikow=0;
-    char wybor;
+            Nadawcy.close();
+        } else {
+            cout << "Nie udalo sie otworzyc pliku i zapisac do niego danych." << endl;
+            system("pause");
+        }
+        cout << endl << "Rejestracja przebiegla pomyslnie. Zaloguj sie" << endl;
+        system("pause");
 
-    uzytkownicy=wczytajUzytkownikow(uzytkownicy);
+        return uzytkownicy;
+    }
+
+    int main() {
+        vector <Uzytkownik> uzytkownicy;
+
+        int liczbaUzytkownikow;
+        int idZalogowanegoUzytkownika=0;
+        int iloscUzytkownikow=0;
+        char wybor;
+
+        uzytkownicy=wczytajUzytkownikow(uzytkownicy);
 
 
-    while(true) {
-        if(idZalogowanegoUzytkownika == 0) {
-            system("cls");
-            cout<<"1. Rejestracja"<<endl;
-            cout<<"2. Logowanie"<<endl;
-            cout<<"9. Zakoncz program"<<endl;
-            cin>>wybor;
+        while(true) {
+            if(idZalogowanegoUzytkownika == 0) {
+                system("cls");
+                cout<<"1. Rejestracja"<<endl;
+                cout<<"2. Logowanie"<<endl;
+                cout<<"9. Zakoncz program"<<endl;
+                cin>>wybor;
 
-            switch(wybor) {
-            case '1': {
-                liczbaUzytkownikow=LiczUzytkownikow(uzytkownicy);
-                uzytkownicy=dodajUzytkownika(uzytkownicy, liczbaUzytkownikow);
-                break;
-            }
-            case '2': {
-                //idZalogowanegoUzytkownika=logowanie(uzytkownicy, iloscUzytkownikow);
-                break;
-            }
-            case '9': {
-                exit(0);
-                break;
-            }
+                switch(wybor) {
+                case '1': {
+                    liczbaUzytkownikow=LiczUzytkownikow(uzytkownicy);
+                    uzytkownicy=dodajUzytkownika(uzytkownicy, liczbaUzytkownikow);
+                    break;
+                }
+                case '2': {
+                    //idZalogowanegoUzytkownika=logowanie(uzytkownicy, iloscUzytkownikow);
+                    break;
+                }
+                case '9': {
+                    exit(0);
+                    break;
+                }
+                }
             }
         }
     }
-}
