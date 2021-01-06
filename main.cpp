@@ -10,6 +10,28 @@ struct Uzytkownik {
     string login, haslo;
 };
 
+string wczytajLinie() {
+    string wejscie = "";
+    getline(cin, wejscie);
+    return wejscie;
+}
+
+char wczytajZnak() {
+    string wejscie = "";
+    char znak  = {0};
+
+    while (true) {
+        getline(cin, wejscie);
+
+        if (wejscie.length() == 1) {
+            znak = wejscie[0];
+            break;
+        }
+        cout << "To nie jest pojedynczy znak. Wpisz ponownie." << endl;
+    }
+    return znak;
+}
+
 int LiczUzytkownikow(vector <Uzytkownik> uzytkownicy) {
     vector<Uzytkownik>::iterator itr=uzytkownicy.begin();
     int LiczbaUzytkownikow=0;
@@ -61,9 +83,59 @@ vector <Uzytkownik> wczytajUzytkownikow(vector <Uzytkownik> uzytkownicy ) {
     return uzytkownicy;
 }
 
+vector<Uzytkownik> dodajUzytkownika(vector<Uzytkownik> uzytkownicy, int liczbaUzytkownikow) {
+    system("cls");
+    Uzytkownik Nadawca;
+    Uzytkownik OstatniNadawca=uzytkownicy.at(liczbaUzytkownikow-1);
+    string login, haslo;
+
+    cout<<"Podaj login: ";
+    login=wczytajLinie();
+    vector<Uzytkownik>::iterator itr=uzytkownicy.begin();
+
+    for(itr; itr!=uzytkownicy.end(); ++itr) {
+        Uzytkownik *Nadawca=new Uzytkownik;
+        *Nadawca=*itr;
+        if(Nadawca->login==login)
+        {
+            cout<<"Taki uzytkownik istnieje. Wpisz inna nazwe uzytkownika: ";
+            cin>>login;
+            itr=uzytkownicy.begin();
+        }
+    }
+
+    cout<<"Podaj haslo: ";
+    haslo=wczytajLinie();
+
+    Nadawca.login=login;
+    Nadawca.haslo=haslo;
+
+    Nadawca.id=OstatniNadawca.id+1;
+    uzytkownicy.push_back(Nadawca);
+
+    fstream Nadawcy;
+    Nadawcy.open("Uzytkownicy.txt",ios::out | ios::app);
+
+    if (Nadawcy.good() == true) {
+        Nadawcy<<endl<<Nadawca.id<<"|";
+        Nadawcy<<Nadawca.login<<"|";
+        Nadawcy<<Nadawca.haslo<<"|";
+
+        Nadawcy.close();
+    } else {
+        cout << "Nie udalo sie otworzyc pliku i zapisac do niego danych." << endl;
+        system("pause");
+    }
+    cout << endl << "Rejestracja przebiegla pomyslnie. Zaloguj sie" << endl;
+    system("pause");
+
+    return uzytkownicy;
+}
+
 int main() {
     vector <Uzytkownik> uzytkownicy;
 
+    int liczbaUzytkownikow;
     int idZalogowanegoUzytkownika=0;
     int iloscUzytkownikow=0;
     char wybor;
@@ -81,7 +153,8 @@ int main() {
 
             switch(wybor) {
             case '1': {
-                //iloscUzytkownikow=rejestracja(uzytkownicy,iloscUzytkownikow);
+                liczbaUzytkownikow=LiczUzytkownikow(uzytkownicy);
+                uzytkownicy=dodajUzytkownika(uzytkownicy, liczbaUzytkownikow);
                 break;
             }
             case '2': {
