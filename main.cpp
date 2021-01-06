@@ -11,6 +11,11 @@ struct Uzytkownik {
     string login, haslo;
 };
 
+struct Kontakt {
+    int id;
+    string imie, nazwisko, adres, telefon, mail;
+};
+
 string wczytajLinie() {
     string wejscie = "";
     getline(cin, wejscie);
@@ -184,6 +189,10 @@ int logowanie(vector <Uzytkownik> uzytkownicy) {
 
 }
 
+int ksiazkaAdresowa(int idUzytkownika){
+
+}
+
 int main() {
     vector <Uzytkownik> uzytkownicy;
 
@@ -210,7 +219,7 @@ int main() {
             }
             case '2': {
                 idZalogowanegoUzytkownika=logowanie(uzytkownicy);
-                //mainBis()
+                idZalogowanegoUzytkownika=ksiazkaAdresowa(idZalogowanegoUzytkownika);
                 break;
             }
             case '9': {
