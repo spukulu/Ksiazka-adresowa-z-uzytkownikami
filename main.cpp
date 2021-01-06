@@ -12,7 +12,7 @@ struct Uzytkownik {
 };
 
 struct Kontakt {
-    int id;
+    int idAdresata, idUzytkownika;
     string imie, nazwisko, adres, telefon, mail;
 };
 
@@ -62,6 +62,13 @@ vector <Uzytkownik> wczytajUzytkownikow(vector <Uzytkownik> uzytkownicy ) {
             Uzytkownik *Nadawca=new Uzytkownik;
 
             string napisID;
+            for(int i=0; i<pozycja; i++) {
+                napisID+=wers[i];
+            }
+            Nadawca->id=atoi(napisID.c_str());
+            wers.erase(0,pozycja+1);
+
+            napisID="";
             for(int i=0; i<pozycja; i++) {
                 napisID+=wers[i];
             }
@@ -187,6 +194,72 @@ int logowanie(vector <Uzytkownik> uzytkownicy) {
     Sleep(1500);
     return 0;
 
+}
+
+vector <Kontakt> wczytajKontakty(vector <Kontakt> znajomi) {
+
+    string wers;
+    fstream ksiazkaAdresowa;
+    ksiazkaAdresowa.open("ksiazkaAdresowa.txt", ios::in);
+    if(ksiazkaAdresowa.good()==false) return znajomi;
+    else {
+        string separator="|";
+        int pozycja;
+        while(!ksiazkaAdresowa.eof()) {
+            getline(ksiazkaAdresowa,wers);
+            pozycja=wers.find(separator);
+            Kontakt *Adresat=new Kontakt;
+
+            string napisID;
+            for(int i=0; i<pozycja; i++) {
+                napisID+=wers[i];
+            }
+            Adresat->idAdresata=atoi(napisID.c_str());
+            wers.erase(0,pozycja+1);
+
+            napisID="";
+            for(int i=0; i<pozycja; i++) {
+                napisID+=wers[i];
+            }
+            Adresat->idUzytkownika=atoi(napisID.c_str());
+            wers.erase(0,pozycja+1);
+
+            pozycja=wers.find(separator);
+            for(int i=0; i<pozycja; i++) {
+                Adresat->imie+=wers[i];
+            }
+            wers.erase(0,pozycja+1);
+
+            pozycja=wers.find(separator);
+            for(int i=0; i<pozycja; i++) {
+                Adresat->nazwisko+=wers[i];
+            }
+            wers.erase(0,pozycja+1);
+
+            pozycja=wers.find(separator);
+            for(int i=0; i<pozycja; i++) {
+                Adresat->telefon+=wers[i];
+            }
+            wers.erase(0,pozycja+1);
+
+            pozycja=wers.find(separator);
+            for(int i=0; i<pozycja; i++) {
+                Adresat->mail+=wers[i];
+            }
+            wers.erase(0,pozycja+1);
+
+            pozycja=wers.find(separator);
+            for(int i=0; i<pozycja; i++) {
+                Adresat->adres+=wers[i];
+            }
+            wers.erase(0,pozycja+1);
+
+            znajomi.push_back(*Adresat);
+            delete Adresat;
+        }
+    }
+    ksiazkaAdresowa.close();
+    return znajomi;
 }
 
 int ksiazkaAdresowa(int idUzytkownika){
