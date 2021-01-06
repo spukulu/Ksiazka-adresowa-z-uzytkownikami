@@ -10,6 +10,15 @@ struct Uzytkownik {
     string login, haslo;
 };
 
+int LiczUzytkownikow(vector <Uzytkownik> uzytkownicy) {
+    vector<Uzytkownik>::iterator itr=uzytkownicy.begin();
+    int LiczbaUzytkownikow=0;
+    for(itr; itr!=uzytkownicy.end(); ++itr) {
+        LiczbaUzytkownikow++;
+    }
+    return LiczbaUzytkownikow;
+}
+
 vector <Uzytkownik> wczytajUzytkownikow(vector <Uzytkownik> uzytkownicy ) {
 
     string wers;
