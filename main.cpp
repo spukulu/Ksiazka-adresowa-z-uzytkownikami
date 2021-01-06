@@ -190,11 +190,72 @@ int logowanie(vector <Uzytkownik> uzytkownicy) {
 }
 
 int ksiazkaAdresowa(int idUzytkownika){
+    char wybor;
+    //znajomi=wczytajKontakty(znajomi);
 
+    int liczbaKontaktow;
+
+    while(true) {
+        system("cls");
+        cin.sync();
+
+        cout<<"KSIAZKA ADRESOWA"<<endl;
+        cout<<"1. Dodaj adresata"<<endl;
+        cout<<"2. Wyszukaj po imieniu"<<endl;
+        cout<<"3. Wyszukaj po nazwisku"<<endl;
+        cout<<"4. Wyswietl wszystkich adresatow"<<endl;
+        cout<<"5. Usun adresata"<<endl;
+        cout<<"6. Edytuj adresata"<<endl;
+        cout<<"7. Zmien haslo"<<endl;
+        cout<<"9. Wyloguj sie"<<endl;
+        cout<<"Twoj wybor: ";
+        wybor=wczytajZnak();
+
+
+        switch(wybor) {
+        case '1': {
+            //liczbaKontaktow=LiczKontakty(znajomi);
+           // znajomi=dodajKontakt(znajomi, liczbaKontaktow);
+            break;
+        }
+        case '2': {
+
+           // wyszukajPoImieniu(znajomi);
+            break;
+        }
+        case '3': {
+
+           // wyszukajPoNazwisku(znajomi);
+            break;
+        }
+        case '4': {
+            //wyswietlKontakty(znajomi);
+            break;
+        }
+        case '5': {
+            //znajomi=usunKontakt(znajomi);
+            //nadpiszEdytowanyPlikTesktowy(znajomi);
+            break;
+        }
+        case '6': {
+            //znajomi=edytujKontakt(znajomi);
+           // nadpiszEdytowanyPlikTesktowy(znajomi);
+            break;
+        }
+
+        case '9': {
+            return 0;
+            break;
+        }
+        }
+    }
 }
+
+
 
 int main() {
     vector <Uzytkownik> uzytkownicy;
+    vector <Kontakt> znajomi;
 
     int liczbaUzytkownikow;
     int idZalogowanegoUzytkownika=0;
