@@ -38,6 +38,22 @@ char wczytajZnak() {
     return znak;
 }
 
+char wczytajZnakTakLubNie() {
+    string wejscie = "";
+    char znak  = {0};
+
+    while (true) {
+        getline(cin, wejscie);
+
+        if (wejscie == "t" || wejscie == "n") {
+            znak = wejscie[0];
+            break;
+        }
+        cout << "To nie jest poprawny znak. Wpisz ponownie." << endl;
+    }
+    return znak;
+}
+
 int LiczUzytkownikow(vector <Uzytkownik> uzytkownicy) {
     vector<Uzytkownik>::iterator itr=uzytkownicy.begin();
     int LiczbaUzytkownikow=0;
@@ -45,6 +61,30 @@ int LiczUzytkownikow(vector <Uzytkownik> uzytkownicy) {
         LiczbaUzytkownikow++;
     }
     return LiczbaUzytkownikow;
+}
+
+void nadpiszEdytowanyPlikTesktowy(vector<Kontakt>znajomi) {
+    fstream ksiazkaAdresowa;
+    ksiazkaAdresowa.open("ksiazkaAdresowa.txt",ios::trunc | ios::out);
+
+    vector<Kontakt>::iterator itr=znajomi.begin();
+    for(itr; itr!=znajomi.end(); ++itr) {
+        Kontakt *Adresat=new Kontakt;
+        *Adresat=*itr;
+
+        if (ksiazkaAdresowa.good() == true) {
+            ksiazkaAdresowa<<Adresat->idAdresata<<"|";
+            ksiazkaAdresowa<<Adresat->idUzytkownika<<"|";
+            ksiazkaAdresowa<<Adresat->imie<<"|";
+            ksiazkaAdresowa<<Adresat->nazwisko<<"|";
+            ksiazkaAdresowa<<Adresat->telefon<<"|";
+            ksiazkaAdresowa<<Adresat->mail<<"|";
+            ksiazkaAdresowa<<Adresat->adres<<"|";
+            if(itr!=(znajomi.end()-1)) ksiazkaAdresowa<<endl;
+        }
+        delete Adresat;
+    }
+    ksiazkaAdresowa.close();
 }
 
 vector <Uzytkownik> wczytajUzytkownikow(vector <Uzytkownik> uzytkownicy ) {
@@ -264,6 +304,7 @@ void wyswietlKontakty(vector<Kontakt> znajomi, int idUzytkownika) {
         Kontakt *Adresat=new Kontakt;
         *Adresat=*itr;
         if(idUzytkownika==Adresat->idUzytkownika) {
+            cout<<Adresat->idAdresata<<"|";
             cout<<Adresat->imie<<"|";
             cout<<Adresat->nazwisko<<"|";
             cout<<Adresat->telefon<<"|";
@@ -347,6 +388,43 @@ void wyszukajPoNazwisku(vector<Kontakt> znajomi, int idUzytkownika) {
     system("pause");
 }
 
+vector<Kontakt> usunKontakt(vector <Kontakt> znajomi, int idUzytkownika) {
+    char wybor;
+    int id;
+    system("cls");
+    cin.sync();
+
+    cout<<"Podaj ID kontaktu, ktory chcesz usunac: ";
+    cin>>id;
+    cout<<endl<<endl<<"Czy na pewno chcesz usunac ten kontakt?"<<endl<<"Jezeli tak, wybierz 't'. Jezeli nie, wybiez 'n'";
+    cout<<endl<<"Twoj wybor: ";
+    cin.sync();
+    wybor=wczytajZnakTakLubNie();
+    if(wybor=='t') {
+        vector<Kontakt>::iterator itr=znajomi.begin();
+        Kontakt *Adresat=new Kontakt;
+        for(itr; itr!=znajomi.end(); ++itr) {
+
+            *Adresat=*itr;
+
+            if(Adresat->idAdresata==id && Adresat->idUzytkownika==idUzytkownika) {
+                cin.sync();
+                znajomi.erase(itr);
+            cout<<endl<<endl<<"Kontakt usuniety"<<endl;
+                system("pause");
+                return znajomi;
+            }
+        }
+        cout<<"Brak dostepu do kontaktu. Kontakt nie zostal usuniety"<<endl;
+            system("pause");
+            return znajomi;
+        delete Adresat;
+    } else {
+
+            return znajomi;
+    }
+}
+
 int ksiazkaAdresowa(int idUzytkownika, vector <Uzytkownik> uzytkownicy, vector <Kontakt> znajomi) {
     while(true) {
         system("cls");
@@ -387,8 +465,8 @@ int ksiazkaAdresowa(int idUzytkownika, vector <Uzytkownik> uzytkownicy, vector <
             break;
         }
         case '5': {
-            //znajomi=usunKontakt(znajomi);
-            // nadpiszEdytowanyPlikTesktowy(znajomi);
+            znajomi=usunKontakt(znajomi, idUzytkownika);
+             nadpiszEdytowanyPlikTesktowy(znajomi);
             break;
         }
         case '6': {
