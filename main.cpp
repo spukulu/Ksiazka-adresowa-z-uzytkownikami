@@ -425,6 +425,128 @@ vector<Kontakt> usunKontakt(vector <Kontakt> znajomi, int idUzytkownika) {
     }
 }
 
+vector<Kontakt> edytujKontakt(vector <Kontakt> znajomi, int idUzytkownika) {
+    char wybor;
+    int id;
+    system("cls");
+    cin.sync();
+
+    cout<<"Podaj ID kontaktu, ktory chcesz edytowac: ";
+    cin>>id;
+    cin.sync();
+    vector<Kontakt>::iterator itr=znajomi.begin();
+    Kontakt *Adresat=new Kontakt, AdresatPoEdycji;
+    string imie, nazwisko, telefon, mail, adres;
+    for(itr; itr!=znajomi.end(); ++itr) {
+
+        *Adresat=*itr;
+
+        if(Adresat->idAdresata==id && Adresat->idUzytkownika==idUzytkownika) {
+            system("cls");
+            cout<<"Wybierz pozycje do edycji"<<endl;
+            cout<<"1. imie"<<endl;
+            cout<<"2. nazwisko"<<endl;
+            cout<<"3. numer telefonu"<<endl;
+            cout<<"4. email"<<endl;
+            cout<<"5. adres"<<endl;
+            cout<<"6. powrot do menu"<<endl;
+            cout<<endl<<"Twoj wybor: ";
+            wybor=wczytajZnak();
+
+            switch(wybor) {
+            case '1': {
+                cout<<"Podaj nowe imie: ";
+                imie=wczytajLinie();
+                AdresatPoEdycji.imie=imie;
+                AdresatPoEdycji.nazwisko=Adresat->nazwisko;
+                AdresatPoEdycji.adres=Adresat->adres;
+                AdresatPoEdycji.mail=Adresat->mail;
+                AdresatPoEdycji.telefon=Adresat->telefon;
+                AdresatPoEdycji.idUzytkownika=Adresat->idUzytkownika;
+                AdresatPoEdycji.idAdresata=Adresat->idAdresata;
+
+                itr=znajomi.insert(itr, AdresatPoEdycji);
+                znajomi.erase( itr+1);
+                return znajomi;
+
+                break;
+            }
+            case '2': {
+                cout<<"Podaj nowe nazwisko: ";
+                nazwisko=wczytajLinie();
+                AdresatPoEdycji.imie=Adresat->imie;
+                AdresatPoEdycji.nazwisko=nazwisko;
+                AdresatPoEdycji.adres=Adresat->adres;
+                AdresatPoEdycji.mail=Adresat->mail;
+                AdresatPoEdycji.telefon=Adresat->telefon;
+                AdresatPoEdycji.idUzytkownika=Adresat->idUzytkownika;
+                AdresatPoEdycji.idAdresata=Adresat->idAdresata;
+
+                itr=znajomi.insert(itr, AdresatPoEdycji);
+                znajomi.erase( itr+1);
+                return znajomi;
+
+                break;
+            }
+            case '3': {
+                cout<<"Podaj nowy numer telefonu: ";
+                telefon=wczytajLinie();
+                AdresatPoEdycji.imie=Adresat->imie;
+                AdresatPoEdycji.nazwisko=Adresat->nazwisko;
+                AdresatPoEdycji.adres=Adresat->adres;
+                AdresatPoEdycji.mail=Adresat->mail;
+                AdresatPoEdycji.telefon=telefon;
+                AdresatPoEdycji.idUzytkownika=Adresat->idUzytkownika;
+                AdresatPoEdycji.idAdresata=Adresat->idAdresata;
+
+                itr=znajomi.insert(itr, AdresatPoEdycji);
+                znajomi.erase( itr+1);
+                return znajomi;
+                break;
+            }
+            case '4': {
+                cout<<"Podaj nowy e-mail: ";
+                mail=wczytajLinie();
+                AdresatPoEdycji.imie=Adresat->imie;
+                AdresatPoEdycji.nazwisko=Adresat->nazwisko;
+                AdresatPoEdycji.adres=Adresat->adres;
+                AdresatPoEdycji.mail=mail;
+                AdresatPoEdycji.telefon=Adresat->telefon;
+                AdresatPoEdycji.idUzytkownika=Adresat->idUzytkownika;
+                AdresatPoEdycji.idAdresata=Adresat->idAdresata;
+
+                itr=znajomi.insert(itr, AdresatPoEdycji);
+                znajomi.erase( itr+1);
+                return znajomi;
+                break;
+            }
+            case '5': {
+                cout<<"Podaj nowy adres: ";
+                adres=wczytajLinie();
+                AdresatPoEdycji.imie=Adresat->imie;
+                AdresatPoEdycji.nazwisko=Adresat->nazwisko;
+                AdresatPoEdycji.adres=adres;
+                AdresatPoEdycji.mail=Adresat->mail;
+                AdresatPoEdycji.telefon=Adresat->telefon;
+                AdresatPoEdycji.idUzytkownika=Adresat->idUzytkownika;
+                AdresatPoEdycji.idAdresata=Adresat->idAdresata;
+
+                itr=znajomi.insert(itr, AdresatPoEdycji);
+                znajomi.erase( itr+1);
+                return znajomi;
+                break;
+            }
+            case '6': {
+                return znajomi;
+                break;
+            }
+            }
+        }
+    }
+    return znajomi;
+    delete Adresat;
+}
+
 int ksiazkaAdresowa(int idUzytkownika, vector <Uzytkownik> uzytkownicy, vector <Kontakt> znajomi) {
     while(true) {
         system("cls");
@@ -470,8 +592,8 @@ int ksiazkaAdresowa(int idUzytkownika, vector <Uzytkownik> uzytkownicy, vector <
             break;
         }
         case '6': {
-            // znajomi=edytujKontakt(znajomi);
-            // nadpiszEdytowanyPlikTesktowy(znajomi);
+             znajomi=edytujKontakt(znajomi, idUzytkownika);
+             nadpiszEdytowanyPlikTesktowy(znajomi);
             break;
 
             case '7': {
