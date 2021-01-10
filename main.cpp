@@ -63,6 +63,15 @@ int LiczUzytkownikow(vector <Uzytkownik> uzytkownicy) {
     return LiczbaUzytkownikow;
 }
 
+int LiczKontakty(vector <Kontakt> znajomi) {
+    vector<Kontakt>::iterator itr=znajomi.begin();
+    int LiczbaKontaktow=0;
+    for(itr; itr!=znajomi.end(); ++itr) {
+        LiczbaKontaktow++;
+    }
+    return LiczbaKontaktow;
+}
+
 void nadpiszEdytowanyPlikTesktowy(vector<Kontakt>znajomi) {
     fstream ksiazkaAdresowa;
     ksiazkaAdresowa.open("ksiazkaAdresowa.txt",ios::trunc | ios::out);
@@ -547,6 +556,54 @@ vector<Kontakt> edytujKontakt(vector <Kontakt> znajomi, int idUzytkownika) {
     delete Adresat;
 }
 
+vector<Kontakt> dodajKontakt(vector<Kontakt> znajomi, int liczbaKontaktow, int idUzytkownika) {
+    system("cls");
+    Kontakt Adresat;
+    Kontakt OstatniAdresat=znajomi.at(liczbaKontaktow-1);
+    string imie, nazwisko, adres, telefon, mail;
+
+    cout<<"Podaj imie: ";
+    imie=wczytajLinie();
+    cout<<"Podaj nazwisko: ";
+    nazwisko=wczytajLinie();
+    cout<<"Podaj adres e-mail: ";
+    mail=wczytajLinie();
+    cout<<"Podaj numer telefonu: ";
+    telefon=wczytajLinie();
+    cout<<"Podaj adres zamieszkania: ";
+    adres=wczytajLinie();
+
+    Adresat.imie=imie;
+    Adresat.nazwisko=nazwisko;
+    Adresat.adres=adres;
+    Adresat.mail=mail;
+    Adresat.telefon=telefon;
+    Adresat.idAdresata=OstatniAdresat.idAdresata+1;
+    Adresat.idUzytkownika=idUzytkownika;
+    znajomi.push_back(Adresat);
+
+    fstream ksiazkaAdresowa;
+    ksiazkaAdresowa.open("ksiazkaAdresowa.txt",ios::out | ios::app);
+
+    if (ksiazkaAdresowa.good() == true) {
+        ksiazkaAdresowa<<endl<<Adresat.idAdresata<<"|";
+        ksiazkaAdresowa<<Adresat.idUzytkownika<<"|";
+        ksiazkaAdresowa<<Adresat.imie<<"|";
+        ksiazkaAdresowa<<Adresat.nazwisko<<"|";
+        ksiazkaAdresowa<<Adresat.telefon<<"|";
+        ksiazkaAdresowa<<Adresat.mail<<"|";
+        ksiazkaAdresowa<<Adresat.adres<<"|";
+        ksiazkaAdresowa.close();
+    } else {
+        cout << "Nie udalo sie otworzyc pliku i zapisac do niego danych." << endl;
+        system("pause");
+    }
+    cout << endl << "Osoba zostala dodana" << endl;
+    system("pause");
+
+    return znajomi;
+}
+
 int ksiazkaAdresowa(int idUzytkownika, vector <Uzytkownik> uzytkownicy, vector <Kontakt> znajomi) {
     while(true) {
         system("cls");
@@ -568,8 +625,8 @@ int ksiazkaAdresowa(int idUzytkownika, vector <Uzytkownik> uzytkownicy, vector <
 
         switch(wybor) {
         case '1': {
-            //liczbaKontaktow=LiczKontakty(znajomi);
-            //znajomi=dodajKontakt(znajomi, liczbaKontaktow);
+            int liczbaKontaktow=LiczKontakty(znajomi);
+            znajomi=dodajKontakt(znajomi, liczbaKontaktow, idUzytkownika);
             break;
         }
         case '2': {
