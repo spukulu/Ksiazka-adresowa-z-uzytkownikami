@@ -12,7 +12,7 @@ struct Uzytkownik {
 };
 
 struct Kontakt {
-    int idAdresata, idUzytkownika;
+    int idUzytkownika, idAdresata;
     string imie, nazwisko, adres, telefon, mail;
 };
 
@@ -68,13 +68,6 @@ vector <Uzytkownik> wczytajUzytkownikow(vector <Uzytkownik> uzytkownicy ) {
             Nadawca->id=atoi(napisID.c_str());
             wers.erase(0,pozycja+1);
 
-            napisID="";
-            for(int i=0; i<pozycja; i++) {
-                napisID+=wers[i];
-            }
-            Nadawca->id=atoi(napisID.c_str());
-            wers.erase(0,pozycja+1);
-
             pozycja=wers.find(separator);
             for(int i=0; i<pozycja; i++) {
                 Nadawca->login+=wers[i];
@@ -123,7 +116,7 @@ vector<Uzytkownik> rejestracja(vector<Uzytkownik> uzytkownicy, int liczbaUzytkow
             *Nadawca=*itr;
             if(Nadawca->login==login) {
                 cout<<"Taki uzytkownik istnieje. Wpisz inna nazwe uzytkownika: ";
-                cin>>login;
+                login=wczytajLinie();
                 itr=uzytkownicy.begin();
             }
             delete Nadawca;
@@ -189,6 +182,7 @@ int logowanie(vector <Uzytkownik> uzytkownicy) {
             Sleep(3000);
             return 0;
         }
+        delete Nadawca;
     }
     cout<<"Nie ma uzytkownika z takim loginem"<<endl;
     Sleep(1500);
@@ -262,15 +256,12 @@ vector <Kontakt> wczytajKontakty(vector <Kontakt> znajomi) {
     return znajomi;
 }
 
-int ksiazkaAdresowa(int idUzytkownika){
-    char wybor;
-    //znajomi=wczytajKontakty(znajomi);
 
-    int liczbaKontaktow;
-
-    while(true) {
+int ksiazkaAdresowa(int idUzytkownika, vector <Uzytkownik> uzytkownicy){
+while(true) {
         system("cls");
         cin.sync();
+        int wybor;
 
         cout<<"KSIAZKA ADRESOWA"<<endl;
         cout<<"1. Dodaj adresata"<<endl;
@@ -288,7 +279,7 @@ int ksiazkaAdresowa(int idUzytkownika){
         switch(wybor) {
         case '1': {
             //liczbaKontaktow=LiczKontakty(znajomi);
-           // znajomi=dodajKontakt(znajomi, liczbaKontaktow);
+            //znajomi=dodajKontakt(znajomi, liczbaKontaktow);
             break;
         }
         case '2': {
@@ -298,21 +289,25 @@ int ksiazkaAdresowa(int idUzytkownika){
         }
         case '3': {
 
-           // wyszukajPoNazwisku(znajomi);
+         //   wyszukajPoNazwisku(znajomi);
             break;
         }
         case '4': {
-            //wyswietlKontakty(znajomi);
+         //   wyswietlKontakty(znajomi);
             break;
         }
         case '5': {
             //znajomi=usunKontakt(znajomi);
-            //nadpiszEdytowanyPlikTesktowy(znajomi);
+           // nadpiszEdytowanyPlikTesktowy(znajomi);
             break;
         }
         case '6': {
-            //znajomi=edytujKontakt(znajomi);
+           // znajomi=edytujKontakt(znajomi);
            // nadpiszEdytowanyPlikTesktowy(znajomi);
+            break;
+
+          case '7': {
+
             break;
         }
 
@@ -323,12 +318,13 @@ int ksiazkaAdresowa(int idUzytkownika){
         }
     }
 }
-
+}
 
 
 int main() {
     vector <Uzytkownik> uzytkownicy;
     vector <Kontakt> znajomi;
+
 
     int liczbaUzytkownikow;
     int idZalogowanegoUzytkownika=0;
@@ -353,7 +349,7 @@ int main() {
             }
             case '2': {
                 idZalogowanegoUzytkownika=logowanie(uzytkownicy);
-                idZalogowanegoUzytkownika=ksiazkaAdresowa(idZalogowanegoUzytkownika);
+                idZalogowanegoUzytkownika=ksiazkaAdresowa(idZalogowanegoUzytkownika, uzytkownicy);
                 break;
             }
             case '9': {
