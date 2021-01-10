@@ -256,9 +256,28 @@ vector <Kontakt> wczytajKontakty(vector <Kontakt> znajomi) {
     return znajomi;
 }
 
+void wyswietlKontakty(vector<Kontakt> znajomi, int idUzytkownika) {
 
-int ksiazkaAdresowa(int idUzytkownika, vector <Uzytkownik> uzytkownicy){
-while(true) {
+    system("cls");
+    vector<Kontakt>::iterator itr=znajomi.begin();
+    for(itr; itr!=znajomi.end(); ++itr) {
+        Kontakt *Adresat=new Kontakt;
+        *Adresat=*itr;
+        if(idUzytkownika==Adresat->idUzytkownika) {
+            cout<<Adresat->imie<<"|";
+            cout<<Adresat->nazwisko<<"|";
+            cout<<Adresat->telefon<<"|";
+            cout<<Adresat->mail<<"|";
+            cout<<Adresat->adres<<"|"<<endl;
+        }
+        delete Adresat;
+    }
+    system("pause");
+}
+
+
+int ksiazkaAdresowa(int idUzytkownika, vector <Uzytkownik> uzytkownicy, vector <Kontakt> znajomi) {
+    while(true) {
         system("cls");
         cin.sync();
         int wybor;
@@ -284,40 +303,40 @@ while(true) {
         }
         case '2': {
 
-           // wyszukajPoImieniu(znajomi);
+            // wyszukajPoImieniu(znajomi);
             break;
         }
         case '3': {
 
-         //   wyszukajPoNazwisku(znajomi);
+            //   wyszukajPoNazwisku(znajomi);
             break;
         }
         case '4': {
-         //   wyswietlKontakty(znajomi);
+               wyswietlKontakty(znajomi, idUzytkownika);
             break;
         }
         case '5': {
             //znajomi=usunKontakt(znajomi);
-           // nadpiszEdytowanyPlikTesktowy(znajomi);
+            // nadpiszEdytowanyPlikTesktowy(znajomi);
             break;
         }
         case '6': {
-           // znajomi=edytujKontakt(znajomi);
-           // nadpiszEdytowanyPlikTesktowy(znajomi);
+            // znajomi=edytujKontakt(znajomi);
+            // nadpiszEdytowanyPlikTesktowy(znajomi);
             break;
 
-          case '7': {
+            case '7': {
 
-            break;
-        }
+                break;
+            }
 
-        case '9': {
-            return 0;
-            break;
+            case '9': {
+                return 0;
+                break;
+            }
         }
         }
     }
-}
 }
 
 
@@ -331,6 +350,7 @@ int main() {
     char wybor;
 
     uzytkownicy=wczytajUzytkownikow(uzytkownicy);
+    znajomi=wczytajKontakty(znajomi);
 
 
     while(true) {
@@ -349,7 +369,7 @@ int main() {
             }
             case '2': {
                 idZalogowanegoUzytkownika=logowanie(uzytkownicy);
-                idZalogowanegoUzytkownika=ksiazkaAdresowa(idZalogowanegoUzytkownika, uzytkownicy);
+                idZalogowanegoUzytkownika=ksiazkaAdresowa(idZalogowanegoUzytkownika, uzytkownicy, znajomi);
                 break;
             }
             case '9': {
