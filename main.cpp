@@ -96,6 +96,27 @@ void nadpiszEdytowanyPlikTesktowy(vector<Kontakt>znajomi) {
     ksiazkaAdresowa.close();
 }
 
+void nadpiszPlikUzytkownicyTxt(vector<Uzytkownik>uzytkownicy) {
+    fstream Uzytkownicy;
+    Uzytkownicy.open("Uzytkownicy.txt",ios::trunc | ios::out);
+
+    vector<Uzytkownik>::iterator itr=uzytkownicy.begin();
+    for(itr; itr!=uzytkownicy.end(); ++itr) {
+        Uzytkownik *Nadawca=new Uzytkownik;
+        *Nadawca=*itr;
+
+        if (Uzytkownicy.good() == true) {
+            Uzytkownicy<<Nadawca->id<<"|";
+            Uzytkownicy<<Nadawca->login<<"|";
+            Uzytkownicy<<Nadawca->haslo<<"|";
+
+            if(itr!=(uzytkownicy.end()-1)) Uzytkownicy<<endl;
+        }
+        delete Nadawca;
+    }
+    Uzytkownicy.close();
+}
+
 vector <Uzytkownik> wczytajUzytkownikow(vector <Uzytkownik> uzytkownicy ) {
 
     string wers;
@@ -604,6 +625,43 @@ vector<Kontakt> dodajKontakt(vector<Kontakt> znajomi, int liczbaKontaktow, int i
     return znajomi;
 }
 
+vector<Uzytkownik> zmianaHasla(vector<Uzytkownik> uzytkownicy, int idUzytkownika){
+    string noweHaslo="", stareHaslo="";
+
+    system("cls");
+    cout<<endl<<"Podaj stare haslo: ";
+    stareHaslo=wczytajLinie();
+    vector<Uzytkownik>::iterator itr=uzytkownicy.begin();
+
+        for(itr; itr!=uzytkownicy.end(); ++itr) {
+            Uzytkownik *Nadawca=new Uzytkownik, UzytkownikPoEdycji;
+            *Nadawca=*itr;
+            if(Nadawca->haslo==stareHaslo && Nadawca->id==idUzytkownika) {
+                cout<<"Podaj nowe haslo: ";
+                noweHaslo=wczytajLinie();
+
+                UzytkownikPoEdycji.haslo=noweHaslo;
+                UzytkownikPoEdycji.id=idUzytkownika;
+                UzytkownikPoEdycji.login=Nadawca->login;
+
+                itr=uzytkownicy.insert(itr, UzytkownikPoEdycji);
+                uzytkownicy.erase( itr+1);
+
+                cout<<"Haslo zostalo zmienione"<<endl;
+                system("pause");
+                return uzytkownicy;
+
+            }
+            delete Nadawca;
+        }
+
+    cout<<"Haslo niepoprawne"<<endl;
+    system("pause");
+    return uzytkownicy;
+
+
+}
+
 int ksiazkaAdresowa(int idUzytkownika, vector <Uzytkownik> uzytkownicy, vector <Kontakt> znajomi) {
     while(true) {
         system("cls");
@@ -654,6 +712,8 @@ int ksiazkaAdresowa(int idUzytkownika, vector <Uzytkownik> uzytkownicy, vector <
             break;
 
             case '7': {
+            uzytkownicy=zmianaHasla(uzytkownicy, idUzytkownika);
+            nadpiszPlikUzytkownicyTxt(uzytkownicy);
 
                 break;
             }
@@ -677,8 +737,9 @@ int main() {
     int idZalogowanegoUzytkownika=0;
     char wybor;
 
-    uzytkownicy=wczytajUzytkownikow(uzytkownicy);
+
     znajomi=wczytajKontakty(znajomi);
+    uzytkownicy=wczytajUzytkownikow(uzytkownicy);
 
 
     while(true) {
@@ -697,7 +758,9 @@ int main() {
             }
             case '2': {
                 idZalogowanegoUzytkownika=logowanie(uzytkownicy);
+                if(idZalogowanegoUzytkownika!=0){
                 idZalogowanegoUzytkownika=ksiazkaAdresowa(idZalogowanegoUzytkownika, uzytkownicy, znajomi);
+                }
                 break;
             }
             case '9': {
