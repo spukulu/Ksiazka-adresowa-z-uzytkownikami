@@ -311,6 +311,42 @@ void wyszukajPoImieniu(vector<Kontakt> znajomi, int idUzytkownika) {
     system("pause");
 }
 
+void wyszukajPoNazwisku(vector<Kontakt> znajomi, int idUzytkownika) {
+
+    string nazwisko;
+
+    system("cls");
+
+    int licznikWyswietlen=0;
+
+    cout<<"Podaj nazwisko: ";
+    nazwisko=wczytajLinie();
+    cout<<endl<<endl;
+
+    vector<Kontakt>::iterator itr=znajomi.begin();
+    for(itr; itr!=znajomi.end(); ++itr) {
+        Kontakt *Adresat=new Kontakt;
+        *Adresat=*itr;
+        if(idUzytkownika==Adresat->idUzytkownika) {
+        if(Adresat->nazwisko==nazwisko) {
+            cout<<Adresat->imie;
+            cout<<"|"<<Adresat->nazwisko;
+            cout<<"|"<<Adresat->telefon;
+            cout<<"|"<<Adresat->mail;
+            cout<<"|"<<Adresat->adres<<endl;
+
+            licznikWyswietlen++;
+        }
+        delete Adresat;
+    }
+    }
+    if(licznikWyswietlen==0) {
+        cout<<"Brak kontaktow z podanym nazwiskiem"<<endl<<endl;
+        cout<<"Nacisnij dowolny klawisz by powrocic do menu glownego"<<endl;
+    }
+    system("pause");
+}
+
 int ksiazkaAdresowa(int idUzytkownika, vector <Uzytkownik> uzytkownicy, vector <Kontakt> znajomi) {
     while(true) {
         system("cls");
@@ -343,7 +379,7 @@ int ksiazkaAdresowa(int idUzytkownika, vector <Uzytkownik> uzytkownicy, vector <
         }
         case '3': {
 
-            //   wyszukajPoNazwisku(znajomi);
+               wyszukajPoNazwisku(znajomi, idUzytkownika);
             break;
         }
         case '4': {
