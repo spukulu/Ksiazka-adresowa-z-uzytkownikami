@@ -579,8 +579,9 @@ vector<Kontakt> edytujKontakt(vector <Kontakt> znajomi, int idUzytkownika) {
 
 vector<Kontakt> dodajKontakt(vector<Kontakt> znajomi, int liczbaKontaktow, int idUzytkownika) {
     system("cls");
-    Kontakt Adresat;
-    Kontakt OstatniAdresat=znajomi.at(liczbaKontaktow-1);
+    Kontakt Adresat, OstatniAdresat;
+    if (liczbaKontaktow!=0){ OstatniAdresat=znajomi.at(liczbaKontaktow-1);}
+    else{OstatniAdresat.idAdresata=0;}
     string imie, nazwisko, adres, telefon, mail;
 
     cout<<"Podaj imie: ";
@@ -607,7 +608,8 @@ vector<Kontakt> dodajKontakt(vector<Kontakt> znajomi, int liczbaKontaktow, int i
     ksiazkaAdresowa.open("ksiazkaAdresowa.txt",ios::out | ios::app);
 
     if (ksiazkaAdresowa.good() == true) {
-        ksiazkaAdresowa<<endl<<Adresat.idAdresata<<"|";
+        if (Adresat.idAdresata!=1) ksiazkaAdresowa<<endl;
+        ksiazkaAdresowa<<Adresat.idAdresata<<"|";
         ksiazkaAdresowa<<Adresat.idUzytkownika<<"|";
         ksiazkaAdresowa<<Adresat.imie<<"|";
         ksiazkaAdresowa<<Adresat.nazwisko<<"|";
