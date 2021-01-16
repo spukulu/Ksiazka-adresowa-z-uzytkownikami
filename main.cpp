@@ -260,7 +260,7 @@ int logowanie(vector <Uzytkownik> uzytkownicy) {
 
 }
 
-vector <Kontakt> wczytajKontakty(vector <Kontakt> znajomi) {
+vector <Kontakt> wczytajKontakty(vector <Kontakt> znajomi, int idUzytkownika) {
 
     string wers;
     fstream ksiazkaAdresowa;
@@ -288,37 +288,39 @@ vector <Kontakt> wczytajKontakty(vector <Kontakt> znajomi) {
             Adresat->idUzytkownika=atoi(napisID.c_str());
             wers.erase(0,pozycja+1);
 
-            pozycja=wers.find(separator);
-            for(int i=0; i<pozycja; i++) {
-                Adresat->imie+=wers[i];
-            }
-            wers.erase(0,pozycja+1);
+            if(Adresat->idUzytkownika==idUzytkownika) {
+                pozycja=wers.find(separator);
+                for(int i=0; i<pozycja; i++) {
+                    Adresat->imie+=wers[i];
+                }
+                wers.erase(0,pozycja+1);
 
-            pozycja=wers.find(separator);
-            for(int i=0; i<pozycja; i++) {
-                Adresat->nazwisko+=wers[i];
-            }
-            wers.erase(0,pozycja+1);
+                pozycja=wers.find(separator);
+                for(int i=0; i<pozycja; i++) {
+                    Adresat->nazwisko+=wers[i];
+                }
+                wers.erase(0,pozycja+1);
 
-            pozycja=wers.find(separator);
-            for(int i=0; i<pozycja; i++) {
-                Adresat->telefon+=wers[i];
-            }
-            wers.erase(0,pozycja+1);
+                pozycja=wers.find(separator);
+                for(int i=0; i<pozycja; i++) {
+                    Adresat->telefon+=wers[i];
+                }
+                wers.erase(0,pozycja+1);
 
-            pozycja=wers.find(separator);
-            for(int i=0; i<pozycja; i++) {
-                Adresat->mail+=wers[i];
-            }
-            wers.erase(0,pozycja+1);
+                pozycja=wers.find(separator);
+                for(int i=0; i<pozycja; i++) {
+                    Adresat->mail+=wers[i];
+                }
+                wers.erase(0,pozycja+1);
 
-            pozycja=wers.find(separator);
-            for(int i=0; i<pozycja; i++) {
-                Adresat->adres+=wers[i];
-            }
-            wers.erase(0,pozycja+1);
+                pozycja=wers.find(separator);
+                for(int i=0; i<pozycja; i++) {
+                    Adresat->adres+=wers[i];
+                }
+                wers.erase(0,pozycja+1);
 
-            znajomi.push_back(*Adresat);
+                znajomi.push_back(*Adresat);
+            }
             delete Adresat;
         }
     }
@@ -363,17 +365,17 @@ void wyszukajPoImieniu(vector<Kontakt> znajomi, int idUzytkownika) {
         Kontakt *Adresat=new Kontakt;
         *Adresat=*itr;
         if(idUzytkownika==Adresat->idUzytkownika) {
-        if(Adresat->imie==imie) {
-            cout<<Adresat->imie;
-            cout<<"|"<<Adresat->nazwisko;
-            cout<<"|"<<Adresat->telefon;
-            cout<<"|"<<Adresat->mail;
-            cout<<"|"<<Adresat->adres<<endl;
+            if(Adresat->imie==imie) {
+                cout<<Adresat->imie;
+                cout<<"|"<<Adresat->nazwisko;
+                cout<<"|"<<Adresat->telefon;
+                cout<<"|"<<Adresat->mail;
+                cout<<"|"<<Adresat->adres<<endl;
 
-            licznikWyswietlen++;
+                licznikWyswietlen++;
+            }
+            delete Adresat;
         }
-        delete Adresat;
-    }
     }
     if(licznikWyswietlen==0) {
         cout<<"Brak kontaktow z podanym imieniem"<<endl<<endl;
@@ -399,17 +401,17 @@ void wyszukajPoNazwisku(vector<Kontakt> znajomi, int idUzytkownika) {
         Kontakt *Adresat=new Kontakt;
         *Adresat=*itr;
         if(idUzytkownika==Adresat->idUzytkownika) {
-        if(Adresat->nazwisko==nazwisko) {
-            cout<<Adresat->imie;
-            cout<<"|"<<Adresat->nazwisko;
-            cout<<"|"<<Adresat->telefon;
-            cout<<"|"<<Adresat->mail;
-            cout<<"|"<<Adresat->adres<<endl;
+            if(Adresat->nazwisko==nazwisko) {
+                cout<<Adresat->imie;
+                cout<<"|"<<Adresat->nazwisko;
+                cout<<"|"<<Adresat->telefon;
+                cout<<"|"<<Adresat->mail;
+                cout<<"|"<<Adresat->adres<<endl;
 
-            licznikWyswietlen++;
+                licznikWyswietlen++;
+            }
+            delete Adresat;
         }
-        delete Adresat;
-    }
     }
     if(licznikWyswietlen==0) {
         cout<<"Brak kontaktow z podanym nazwiskiem"<<endl<<endl;
@@ -440,18 +442,18 @@ vector<Kontakt> usunKontakt(vector <Kontakt> znajomi, int idUzytkownika) {
             if(Adresat->idAdresata==id && Adresat->idUzytkownika==idUzytkownika) {
                 cin.sync();
                 znajomi.erase(itr);
-            cout<<endl<<endl<<"Kontakt usuniety"<<endl;
+                cout<<endl<<endl<<"Kontakt usuniety"<<endl;
                 system("pause");
                 return znajomi;
             }
         }
         cout<<"Brak dostepu do kontaktu. Kontakt nie zostal usuniety"<<endl;
-            system("pause");
-            return znajomi;
+        system("pause");
+        return znajomi;
         delete Adresat;
     } else {
 
-            return znajomi;
+        return znajomi;
     }
 }
 
@@ -580,8 +582,11 @@ vector<Kontakt> edytujKontakt(vector <Kontakt> znajomi, int idUzytkownika) {
 vector<Kontakt> dodajKontakt(vector<Kontakt> znajomi, int liczbaKontaktow, int idUzytkownika) {
     system("cls");
     Kontakt Adresat, OstatniAdresat;
-    if (liczbaKontaktow!=0){ OstatniAdresat=znajomi.at(liczbaKontaktow-1);}
-    else{OstatniAdresat.idAdresata=0;}
+    if (liczbaKontaktow!=0) {
+        OstatniAdresat=znajomi.at(liczbaKontaktow-1);
+    } else {
+        OstatniAdresat.idAdresata=0;
+    }
     string imie, nazwisko, adres, telefon, mail;
 
     cout<<"Podaj imie: ";
@@ -627,7 +632,7 @@ vector<Kontakt> dodajKontakt(vector<Kontakt> znajomi, int liczbaKontaktow, int i
     return znajomi;
 }
 
-vector<Uzytkownik> zmianaHasla(vector<Uzytkownik> uzytkownicy, int idUzytkownika){
+vector<Uzytkownik> zmianaHasla(vector<Uzytkownik> uzytkownicy, int idUzytkownika) {
     string noweHaslo="", stareHaslo="";
 
     system("cls");
@@ -635,27 +640,27 @@ vector<Uzytkownik> zmianaHasla(vector<Uzytkownik> uzytkownicy, int idUzytkownika
     stareHaslo=wczytajLinie();
     vector<Uzytkownik>::iterator itr=uzytkownicy.begin();
 
-        for(itr; itr!=uzytkownicy.end(); ++itr) {
-            Uzytkownik *Nadawca=new Uzytkownik, UzytkownikPoEdycji;
-            *Nadawca=*itr;
-            if(Nadawca->haslo==stareHaslo && Nadawca->id==idUzytkownika) {
-                cout<<"Podaj nowe haslo: ";
-                noweHaslo=wczytajLinie();
+    for(itr; itr!=uzytkownicy.end(); ++itr) {
+        Uzytkownik *Nadawca=new Uzytkownik, UzytkownikPoEdycji;
+        *Nadawca=*itr;
+        if(Nadawca->haslo==stareHaslo && Nadawca->id==idUzytkownika) {
+            cout<<"Podaj nowe haslo: ";
+            noweHaslo=wczytajLinie();
 
-                UzytkownikPoEdycji.haslo=noweHaslo;
-                UzytkownikPoEdycji.id=idUzytkownika;
-                UzytkownikPoEdycji.login=Nadawca->login;
+            UzytkownikPoEdycji.haslo=noweHaslo;
+            UzytkownikPoEdycji.id=idUzytkownika;
+            UzytkownikPoEdycji.login=Nadawca->login;
 
-                itr=uzytkownicy.insert(itr, UzytkownikPoEdycji);
-                uzytkownicy.erase( itr+1);
+            itr=uzytkownicy.insert(itr, UzytkownikPoEdycji);
+            uzytkownicy.erase( itr+1);
 
-                cout<<"Haslo zostalo zmienione"<<endl;
-                system("pause");
-                return uzytkownicy;
+            cout<<"Haslo zostalo zmienione"<<endl;
+            system("pause");
+            return uzytkownicy;
 
-            }
-            delete Nadawca;
         }
+        delete Nadawca;
+    }
 
     cout<<"Haslo niepoprawne"<<endl;
     system("pause");
@@ -669,6 +674,8 @@ int ksiazkaAdresowa(int idUzytkownika, vector <Uzytkownik> uzytkownicy, vector <
         system("cls");
         cin.sync();
         int wybor;
+
+        znajomi=wczytajKontakty(znajomi, idUzytkownika);
 
         cout<<"KSIAZKA ADRESOWA"<<endl;
         cout<<"1. Dodaj adresata"<<endl;
@@ -691,31 +698,31 @@ int ksiazkaAdresowa(int idUzytkownika, vector <Uzytkownik> uzytkownicy, vector <
         }
         case '2': {
 
-             wyszukajPoImieniu(znajomi, idUzytkownika);
+            wyszukajPoImieniu(znajomi, idUzytkownika);
             break;
         }
         case '3': {
 
-               wyszukajPoNazwisku(znajomi, idUzytkownika);
+            wyszukajPoNazwisku(znajomi, idUzytkownika);
             break;
         }
         case '4': {
-               wyswietlKontakty(znajomi, idUzytkownika);
+            wyswietlKontakty(znajomi, idUzytkownika);
             break;
         }
         case '5': {
             znajomi=usunKontakt(znajomi, idUzytkownika);
-             nadpiszEdytowanyPlikTesktowy(znajomi);
+            nadpiszEdytowanyPlikTesktowy(znajomi);
             break;
         }
         case '6': {
-             znajomi=edytujKontakt(znajomi, idUzytkownika);
-             nadpiszEdytowanyPlikTesktowy(znajomi);
+            znajomi=edytujKontakt(znajomi, idUzytkownika);
+            nadpiszEdytowanyPlikTesktowy(znajomi);
             break;
 
             case '7': {
-            uzytkownicy=zmianaHasla(uzytkownicy, idUzytkownika);
-            nadpiszPlikUzytkownicyTxt(uzytkownicy);
+                uzytkownicy=zmianaHasla(uzytkownicy, idUzytkownika);
+                nadpiszPlikUzytkownicyTxt(uzytkownicy);
 
                 break;
             }
@@ -735,12 +742,12 @@ int main() {
     vector <Kontakt> znajomi;
 
 
-    int liczbaUzytkownikow;
+    int liczbaUzytkownikow=0;
     int idZalogowanegoUzytkownika=0;
     char wybor;
 
 
-    znajomi=wczytajKontakty(znajomi);
+
     uzytkownicy=wczytajUzytkownikow(uzytkownicy);
 
 
@@ -760,8 +767,8 @@ int main() {
             }
             case '2': {
                 idZalogowanegoUzytkownika=logowanie(uzytkownicy);
-                if(idZalogowanegoUzytkownika!=0){
-                idZalogowanegoUzytkownika=ksiazkaAdresowa(idZalogowanegoUzytkownika, uzytkownicy, znajomi);
+                if(idZalogowanegoUzytkownika!=0) {
+                    idZalogowanegoUzytkownika=ksiazkaAdresowa(idZalogowanegoUzytkownika, uzytkownicy, znajomi);
                 }
                 break;
             }
