@@ -6,6 +6,77 @@
 
 using namespace std;
 
+bool moveToStartOfLine(ifstream& fs) {
+    fs.seekg(-1, ios_base::cur);
+    for(long i = fs.tellg(); i > 0; i--) {
+        if(fs.peek() == '\n') {
+            fs.get();
+            return true;
+        }
+        fs.seekg(i, ios_base::beg);
+    }
+    return false;
+}
+
+string getLastLineInFile(ifstream& fs) {
+    // Go to the last character before EOF
+    fs.seekg(-1, ios_base::end);
+    if (!moveToStartOfLine(fs))
+        return "";
+    string lastline = "";
+    getline(fs, lastline);
+    return lastline;
+}
+
+string pobierzOstatniaLiniePlikuTxt(string filename) {
+    ifstream fs;
+    fs.open(filename.c_str(), fstream::in);
+    if(!fs.is_open()) {
+        return  "Could not open file";
+    }
+    return getLastLineInFile(fs);
+}
+
+int pobierzIdZPierwszejLinijki(string filename) {
+
+    string wers;
+    fstream ksiazkaAdresowa;
+    ksiazkaAdresowa.open("ksiazkaAdresowa.txt", ios::in);
+
+    string separator="|";
+    int pozycja;
+
+    getline(ksiazkaAdresowa,wers);
+    pozycja=wers.find(separator);
+    string napisID;
+    for(int i=0; i<pozycja; i++) {
+        napisID+=wers[i];
+    }
+    int id=atoi(napisID.c_str());
+    ksiazkaAdresowa.close();
+    return id;
+}
+
+int pobierzIdAdresata(string wers, string filename) {
+    int id;
+    if(wers=="Could not open file") return 0;
+    else if (wers=="") {
+        id=pobierzIdZPierwszejLinijki(filename);
+        return id;
+    } else {
+        string separator="|";
+        int pozycja;
+        pozycja=wers.find(separator);
+        string napisID;
+        for(int i=0; i<pozycja; i++) {
+            napisID+=wers[i];
+        }
+        id=atoi(napisID.c_str());
+        return id;
+    }
+
+}
+
 struct Uzytkownik {
     int id;
     string login, haslo;
@@ -72,28 +143,91 @@ int LiczKontakty(vector <Kontakt> znajomi) {
     return LiczbaKontaktow;
 }
 
-void nadpiszEdytowanyPlikTesktowy(vector<Kontakt>znajomi) {
-    fstream ksiazkaAdresowa;
-    ksiazkaAdresowa.open("ksiazkaAdresowa.txt",ios::trunc | ios::out);
+void EdycjaAdresataWPlikuTxt (vector<Kontakt>znajomi, int idEdytowanegoAdresata){
+    fstream ksiazkaAdresowa, ksiazkaAdresowa_tymczasowy;
+    ksiazkaAdresowa.open("ksiazkaAdresowa.txt",ios::in);
+    ksiazkaAdresowa_tymczasowy.open("ksiazkaAdresowa_tymczasowy.txt",ios::out);
 
-    vector<Kontakt>::iterator itr=znajomi.begin();
-    for(itr; itr!=znajomi.end(); ++itr) {
-        Kontakt *Adresat=new Kontakt;
-        *Adresat=*itr;
+    string wers;
 
-        if (ksiazkaAdresowa.good() == true) {
-            ksiazkaAdresowa<<Adresat->idAdresata<<"|";
-            ksiazkaAdresowa<<Adresat->idUzytkownika<<"|";
-            ksiazkaAdresowa<<Adresat->imie<<"|";
-            ksiazkaAdresowa<<Adresat->nazwisko<<"|";
-            ksiazkaAdresowa<<Adresat->telefon<<"|";
-            ksiazkaAdresowa<<Adresat->mail<<"|";
-            ksiazkaAdresowa<<Adresat->adres<<"|";
-            if(itr!=(znajomi.end()-1)) ksiazkaAdresowa<<endl;
+    if(ksiazkaAdresowa.good()==true) {
+        string separator="|";
+        int pozycja;
+        while(!ksiazkaAdresowa.eof()) {
+            getline(ksiazkaAdresowa,wers);
+            pozycja=wers.find(separator);
+
+            string napisID="";
+            for(int i=0; i<pozycja; i++) {
+                napisID+=wers[i];
+            }
+            int idAdresata=atoi(napisID.c_str());
+            if(idAdresata!=1){ksiazkaAdresowa_tymczasowy<<endl;}
+            if(idAdresata!=idEdytowanegoAdresata && ksiazkaAdresowa_tymczasowy.good() == true){
+
+                ksiazkaAdresowa_tymczasowy<<wers;
+            }else{
+                vector<Kontakt>::iterator itr=znajomi.begin();
+                for(itr; itr!=znajomi.end(); ++itr) {
+                Kontakt *Adresat=new Kontakt;
+                *Adresat=*itr;
+                if(Adresat->idAdresata==idEdytowanegoAdresata){
+                    if (ksiazkaAdresowa_tymczasowy.good() == true) {
+            ksiazkaAdresowa_tymczasowy<<Adresat->idAdresata<<"|";
+            ksiazkaAdresowa_tymczasowy<<Adresat->idUzytkownika<<"|";
+            ksiazkaAdresowa_tymczasowy<<Adresat->imie<<"|";
+            ksiazkaAdresowa_tymczasowy<<Adresat->nazwisko<<"|";
+            ksiazkaAdresowa_tymczasowy<<Adresat->telefon<<"|";
+            ksiazkaAdresowa_tymczasowy<<Adresat->mail<<"|";
+            ksiazkaAdresowa_tymczasowy<<Adresat->adres<<"|";
+                    }
+                        }
+                delete Adresat;
+            }
         }
-        delete Adresat;
     }
+
+
+
     ksiazkaAdresowa.close();
+    remove("ksiazkaAdresowa.txt");
+    ksiazkaAdresowa_tymczasowy.close();
+    rename("ksiazkaAdresowa_tymczasowy.txt", "ksiazkaAdresowa.txt");
+
+}
+}
+
+void UsuwanieAdresataWPlikuTxt(vector<Kontakt>znajomi, int idEdytowanegoAdresata){
+    fstream ksiazkaAdresowa, ksiazkaAdresowa_tymczasowy;
+    ksiazkaAdresowa.open("ksiazkaAdresowa.txt",ios::in);
+    ksiazkaAdresowa_tymczasowy.open("ksiazkaAdresowa_tymczasowy.txt",ios::out);
+
+    string wers;
+
+    if(ksiazkaAdresowa.good()==true) {
+        string separator="|";
+        int pozycja;
+        while(!ksiazkaAdresowa.eof()) {
+            getline(ksiazkaAdresowa,wers);
+            pozycja=wers.find(separator);
+
+            string napisID="";
+            for(int i=0; i<pozycja; i++) {
+                napisID+=wers[i];
+            }
+            int idAdresata=atoi(napisID.c_str());
+
+            if(idAdresata!=idEdytowanegoAdresata && ksiazkaAdresowa_tymczasowy.good() == true){
+
+                if(idAdresata!=1){ksiazkaAdresowa_tymczasowy<<endl;}
+                ksiazkaAdresowa_tymczasowy<<wers;
+            }
+    }
+}
+ksiazkaAdresowa.close();
+    remove("ksiazkaAdresowa.txt");
+    ksiazkaAdresowa_tymczasowy.close();
+    rename("ksiazkaAdresowa_tymczasowy.txt", "ksiazkaAdresowa.txt");
 }
 
 void nadpiszPlikUzytkownicyTxt(vector<Uzytkownik>uzytkownicy) {
@@ -420,15 +554,11 @@ void wyszukajPoNazwisku(vector<Kontakt> znajomi, int idUzytkownika) {
     system("pause");
 }
 
-vector<Kontakt> usunKontakt(vector <Kontakt> znajomi, int idUzytkownika) {
+vector<Kontakt> usunKontakt(vector <Kontakt> znajomi, int idUzytkownika, int id) {
     char wybor;
-    int id;
     system("cls");
-    cin.sync();
 
-    cout<<"Podaj ID kontaktu, ktory chcesz usunac: ";
-    cin>>id;
-    cout<<endl<<endl<<"Czy na pewno chcesz usunac ten kontakt?"<<endl<<"Jezeli tak, wybierz 't'. Jezeli nie, wybiez 'n'";
+    cout<<"Czy na pewno chcesz usunac ten kontakt?"<<endl<<"Jezeli tak, wybierz 't'. Jezeli nie, wybiez 'n'";
     cout<<endl<<"Twoj wybor: ";
     cin.sync();
     wybor=wczytajZnakTakLubNie();
@@ -448,7 +578,7 @@ vector<Kontakt> usunKontakt(vector <Kontakt> znajomi, int idUzytkownika) {
             }
         }
         cout<<"Brak dostepu do kontaktu. Kontakt nie zostal usuniety"<<endl;
-        system("pause");
+        Sleep(2000);
         return znajomi;
         delete Adresat;
     } else {
@@ -457,19 +587,27 @@ vector<Kontakt> usunKontakt(vector <Kontakt> znajomi, int idUzytkownika) {
     }
 }
 
-vector<Kontakt> edytujKontakt(vector <Kontakt> znajomi, int idUzytkownika) {
-    char wybor;
-    int id;
+int pobierzIdAdresata(){
+int id;
     system("cls");
     cin.sync();
 
-    cout<<"Podaj ID kontaktu, ktory chcesz edytowac: ";
+    cout<<"Podaj ID kontaktu, ktory chcesz edytowac/usunac: ";
     cin>>id;
+    return id;
+}
+
+vector<Kontakt> edytujKontakt(vector <Kontakt> znajomi, int idUzytkownika, int id) {
+    char wybor;
+
+    system("cls");
+
     cin.sync();
     vector<Kontakt>::iterator itr=znajomi.begin();
     Kontakt *Adresat=new Kontakt, AdresatPoEdycji;
     string imie, nazwisko, telefon, mail, adres;
     for(itr; itr!=znajomi.end(); ++itr) {
+
 
         *Adresat=*itr;
 
@@ -575,19 +713,17 @@ vector<Kontakt> edytujKontakt(vector <Kontakt> znajomi, int idUzytkownika) {
             }
         }
     }
+    cout<<"Brak dostepu do kontaktu."<<endl;
+        Sleep(2000);
     return znajomi;
     delete Adresat;
 }
 
-vector<Kontakt> dodajKontakt(vector<Kontakt> znajomi, int liczbaKontaktow, int idUzytkownika) {
+void dodajKontakt(int idOstatniegoAdresata, int idUzytkownika) {
     system("cls");
-    Kontakt Adresat, OstatniAdresat;
-    if (liczbaKontaktow!=0) {
-        OstatniAdresat=znajomi.at(liczbaKontaktow-1);
-    } else {
-        OstatniAdresat.idAdresata=0;
-    }
+
     string imie, nazwisko, adres, telefon, mail;
+    int idAdresata=idOstatniegoAdresata+1;
 
     cout<<"Podaj imie: ";
     imie=wczytajLinie();
@@ -600,27 +736,18 @@ vector<Kontakt> dodajKontakt(vector<Kontakt> znajomi, int liczbaKontaktow, int i
     cout<<"Podaj adres zamieszkania: ";
     adres=wczytajLinie();
 
-    Adresat.imie=imie;
-    Adresat.nazwisko=nazwisko;
-    Adresat.adres=adres;
-    Adresat.mail=mail;
-    Adresat.telefon=telefon;
-    Adresat.idAdresata=OstatniAdresat.idAdresata+1;
-    Adresat.idUzytkownika=idUzytkownika;
-    znajomi.push_back(Adresat);
-
     fstream ksiazkaAdresowa;
     ksiazkaAdresowa.open("ksiazkaAdresowa.txt",ios::out | ios::app);
 
     if (ksiazkaAdresowa.good() == true) {
-        if (Adresat.idAdresata!=1) ksiazkaAdresowa<<endl;
-        ksiazkaAdresowa<<Adresat.idAdresata<<"|";
-        ksiazkaAdresowa<<Adresat.idUzytkownika<<"|";
-        ksiazkaAdresowa<<Adresat.imie<<"|";
-        ksiazkaAdresowa<<Adresat.nazwisko<<"|";
-        ksiazkaAdresowa<<Adresat.telefon<<"|";
-        ksiazkaAdresowa<<Adresat.mail<<"|";
-        ksiazkaAdresowa<<Adresat.adres<<"|";
+        if (idAdresata!=1) ksiazkaAdresowa<<endl;
+        ksiazkaAdresowa<<idAdresata<<"|";
+        ksiazkaAdresowa<<idUzytkownika<<"|";
+        ksiazkaAdresowa<<imie<<"|";
+        ksiazkaAdresowa<<nazwisko<<"|";
+        ksiazkaAdresowa<<telefon<<"|";
+        ksiazkaAdresowa<<mail<<"|";
+        ksiazkaAdresowa<<adres<<"|";
         ksiazkaAdresowa.close();
     } else {
         cout << "Nie udalo sie otworzyc pliku i zapisac do niego danych." << endl;
@@ -629,7 +756,6 @@ vector<Kontakt> dodajKontakt(vector<Kontakt> znajomi, int liczbaKontaktow, int i
     cout << endl << "Osoba zostala dodana" << endl;
     system("pause");
 
-    return znajomi;
 }
 
 vector<Uzytkownik> zmianaHasla(vector<Uzytkownik> uzytkownicy, int idUzytkownika) {
@@ -673,7 +799,7 @@ int ksiazkaAdresowa(int idUzytkownika, vector <Uzytkownik> uzytkownicy, vector <
     while(true) {
         system("cls");
         cin.sync();
-        int wybor;
+        int wybor, idAdresataDoEdycji, idAdresataDoUsuniecia;
 
         znajomi=wczytajKontakty(znajomi, idUzytkownika);
 
@@ -692,8 +818,11 @@ int ksiazkaAdresowa(int idUzytkownika, vector <Uzytkownik> uzytkownicy, vector <
 
         switch(wybor) {
         case '1': {
-            int liczbaKontaktow=LiczKontakty(znajomi);
-            znajomi=dodajKontakt(znajomi, liczbaKontaktow, idUzytkownika);
+            string filename = "ksiazkaAdresowa.txt";
+            string wers=pobierzOstatniaLiniePlikuTxt(filename);
+            int idOstatniegoKontaktu=pobierzIdAdresata(wers, filename);
+            dodajKontakt(idOstatniegoKontaktu,idUzytkownika);
+            znajomi=wczytajKontakty(znajomi, idUzytkownika);
             break;
         }
         case '2': {
@@ -711,13 +840,15 @@ int ksiazkaAdresowa(int idUzytkownika, vector <Uzytkownik> uzytkownicy, vector <
             break;
         }
         case '5': {
-            znajomi=usunKontakt(znajomi, idUzytkownika);
-            nadpiszEdytowanyPlikTesktowy(znajomi);
+            idAdresataDoUsuniecia=pobierzIdAdresata();
+            znajomi=usunKontakt(znajomi, idUzytkownika, idAdresataDoUsuniecia);
+            UsuwanieAdresataWPlikuTxt(znajomi, idAdresataDoUsuniecia);
             break;
         }
         case '6': {
-            znajomi=edytujKontakt(znajomi, idUzytkownika);
-            nadpiszEdytowanyPlikTesktowy(znajomi);
+            idAdresataDoEdycji=pobierzIdAdresata();
+            znajomi=edytujKontakt(znajomi, idUzytkownika, idAdresataDoEdycji);
+            EdycjaAdresataWPlikuTxt(znajomi, idAdresataDoEdycji);
             break;
 
             case '7': {
@@ -735,7 +866,6 @@ int ksiazkaAdresowa(int idUzytkownika, vector <Uzytkownik> uzytkownicy, vector <
         }
     }
 }
-
 
 int main() {
     vector <Uzytkownik> uzytkownicy;
